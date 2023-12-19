@@ -1,6 +1,6 @@
-# pomofocus
+# Simple pomofocus technique timer
 
-This template should help get you started developing with Vue 3 in Vite.
+This application is a simple timer to do the pomofocus technique.
 
 ## Recommended IDE Setup
 
