@@ -1,20 +1,90 @@
-<script lang="ts">
-export default {
-  name: "HomeView",
+<template>
+  <v-container class="mt-16">
+    <v-row justify="space-around">
+      <v-btn
+        :active="activeSessionType == 'long-session'"
+        @click="setSession('long-session')"
+        >Long Session</v-btn
+      >
+      <v-btn
+        :active="activeSessionType == 'short-session'"
+        @click="setSession('short-session')"
+        >Short Session</v-btn
+      >
+      <v-btn
+        :active="activeSessionType == 'long-break'"
+        @click="setSession('long-break')"
+        >Long Break</v-btn
+      >
+      <v-btn
+        :active="activeSessionType == 'short-break'"
+        @click="setSession('short-break')"
+        >Short Break</v-btn
+      >
+    </v-row>
+    <v-row justify="center">
+        <h1>{{ timerMin }} : {{ timerSeconds }}</h1> 
+    </v-row>
+    <v-row justify="center">
+      <v-btn v-if="!isSessionActive" size="x-large" color="primary" @click="startTimer">Start</v-btn>
+      <v-btn v-if="isSessionActive" size="x-large" color="secondary" @click="pauseTimer">Pause</v-btn>
+    </v-row>
+  </v-container>
+</template>
 
+
+<script lang="ts">
+
+export default {
   data() {
     return {
-      timer: 50 * 60,
+      timer: 10,
+      timerInterval: 0,
       activeSessionType: "long-session",
-    };
+      isSessionActive: false,
+    }
+  },
+
+  computed: {
+    timerMin() {
+      const minutes = Math.floor(this.timer / 60);
+      return (minutes < 10 ? "0" : "") + minutes;
+    },
+    timerSeconds() {
+      const seconds = Math.floor(this.timer % 60);
+      return (seconds < 10 ? "0" : "") + seconds;
+    },
   },
 
   methods: {
+
     startTimer() {
-      setInterval(() => {
-        this.timer--;
+      if (this.isSessionActive) {
+        this.stopTimer();
+      }
+      this.isSessionActive = true;
+      this.timerInterval = setInterval(() => {
+        if (this.timer > 0) {
+          this.timer--;
+        } else {
+          this.stopTimer();
+        }
       }, 1000);
     },
+
+    stopTimer() {
+      this.isSessionActive = false;
+      if (this.timerInterval) {
+        clearInterval(this.timerInterval);
+        this.timerInterval = 0;
+      }
+    },
+
+    pauseTimer() {
+      this.stopTimer();
+    },
+
+
     setSession(name: string) {
       this.activeSessionType = name;
       switch (name) {
@@ -33,44 +103,6 @@ export default {
       }
     },
   },
-
-  computed: {
-    timerValue(): number {
-      return this.timer;
-    },
-  },
 };
 </script>
 
-<template>
-  <v-container class="mt-16">
-    <v-row justify="space-around">
-      <v-btn
-        :active="activeSessionType == 'long-session'"
-        @click="setSession('long-session')"
-        >Long Session</v-btn
-      >
-      <v-btn
-        :active="activeSessionType == 'short-session'"
-        @click="setSession('short-session')"
-        >Short Session</v-btn
-      >
-      <v-btn
-        :active="activeSessionType == 'long-break'"
-        @click="setSession('long-break')"
-        >Long Session</v-btn
-      >
-      <v-btn
-        :active="activeSessionType == 'short-break'"
-        @click="setSession('short-break')"
-        >Short Session</v-btn
-      >
-    </v-row>
-    <v-row class="my-16" justify="center">
-      <span class="text-h1">{{ timerValue }}</span>
-    </v-row>
-    <v-row justify="center">
-      <v-btn color="primary" @click="startTimer">Start</v-btn>
-    </v-row>
-  </v-container>
-</template>
